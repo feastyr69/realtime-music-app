@@ -1,0 +1,4 @@
+.env
+node_modules
+crud/node_modules
+server/node_modules
