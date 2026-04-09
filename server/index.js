@@ -5,15 +5,19 @@ const connectIO = require("./sockets/chatSocket");
 const { connectRedis, socketAdapter } = require("./config/redis");
 const cors = require("cors");
 const dotenv = require("dotenv");
+const { Server } = require("socket.io");
+const { createServer } = require("http");
 dotenv.config({ path: "./.env" });
 
 const app = express();
+const httpServer = createServer(app);
+
 app.use(cors({
   origin: process.env.CLIENT_URL,
   credentials: true
 }));
 
-const io = require("socket.io")(3000, {
+const io = new Server(httpServer, {
   cors: {
     origin: process.env.CLIENT_URL
   },
