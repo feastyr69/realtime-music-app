@@ -170,7 +170,7 @@ export default function Player({ roomId, userName, socket }) {
         socket.on('receive-sync-song', (data) => {
             console.log("receive-sync-song", data);
             const { videoId, isPlaying: syncIsPlaying, songData, timestamp } = data;
-            
+
             // Calculate latency offset gracefully (in seconds)
             const latencyOffset = (timestamp && syncIsPlaying) ? (Date.now() - timestamp) / 1000 : 0;
             const syncProgress = (data.progress || 0) + latencyOffset;
@@ -250,10 +250,10 @@ export default function Player({ roomId, userName, socket }) {
                 className='flex flex-col w-full h-120 p-6 bg-white/[0.04] rounded-xl border border-white/[0.1] shadow-[0_12px_48px_rgba(0,0,0,0.35)] backdrop-blur-xl justify-between'
             >
                 {/* Hidden YouTube Player */}
-                <div className="absolute opacity-0 pointer-events-none">
+                <div className="absolute opacity-100 pointer-events-none">
                     <YouTube videoId="" opts={{
-                        height: '10',
-                        width: '10',
+                        height: '50',
+                        width: '50',
                         playerVars: {
                             autoplay: 1,
                             playsinline: 1,
