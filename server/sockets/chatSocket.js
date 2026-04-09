@@ -90,7 +90,7 @@ const connectIO = (io) => {
 
         //user remove song
         socket.on("remove-song", async (roomId, index, videoId) => {
-            if (index === 0) return; // Prevent removing current song this way
+            if (index === 0) return; // prevent removing current song this way
             const queue = await getQueue(roomId);
             if (queue[index] && queue[index].videoId === videoId) {
                 const updatedQueue = await removeSong(roomId, index);

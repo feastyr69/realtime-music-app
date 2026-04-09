@@ -22,16 +22,12 @@ const searchSong = async (req, res) => {
     }
 }
 
-const cueSong = async (roomId, videoId) => {
+const cueSong = async (roomId, songObj) => {
     try {
-        const { default: YTMusic } = await import("ytmusic-api");
-        const ytmusic = new YTMusic();
-        await ytmusic.initialize();
-        const data = await ytmusic.getSong(String(videoId));
         const cueKey = `room:${roomId}:cue`;
-        await redisClient.rPush(cueKey, JSON.stringify(data));
+        await redisClient.rPush(cueKey, JSON.stringify(songObj));
         await redisClient.expire(cueKey, 60 * 60);
-        return data;
+        return songObj;
     } catch (err) {
         console.log(err);
         return [];
