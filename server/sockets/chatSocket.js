@@ -131,7 +131,10 @@ const connectIO = (io) => {
             console.log("request sync from room", roomId);
             const totalSockets = await io.in(roomId).fetchSockets();
             if (totalSockets.length > 1) {
-                socket.to(roomId).emit("provide-sync");
+                const proxySocket = totalSockets.find(s => s.id !== socket.id);
+                if (proxySocket) {
+                    io.to(proxySocket.id).emit("provide-sync");
+                }
             }
             else {
 
