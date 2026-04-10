@@ -25,6 +25,11 @@ const userInfo = {
 }
 
 const socket = io(backendUrl, {
+    reconnection: true,
+    reconnectionAttempts: 10,
+    reconnectionDelay: 1000,
+    pingInterval: 10000,
+    pingTimeout: 5000,
     extraHeaders: {
         "user-info": JSON.stringify(userInfo)
     }
