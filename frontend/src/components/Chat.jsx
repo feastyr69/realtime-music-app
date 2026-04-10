@@ -91,7 +91,7 @@ export default function Chat({ roomId, sessionId, userName, avatarUrl, className
                 className='flex flex-col w-72 sm:w-80 h-120 p-3 sm:p-4 rounded-xl shadow-[0_12px_48px_rgba(0,0,0,0.35)] bg-white/4 backdrop-blur-xl border border-white/10'
             >
                 <p className="text-[9px] sm:text-[10px] uppercase tracking-[0.2em] text-zinc-500 mb-2 font-medium">Room chat</p>
-                <div ref={chatScrollRef} className="flex flex-col font-light tracking-tight mb-2 h-full overflow-y-auto overflow-x-hidden snap-y">
+                <div ref={chatScrollRef} className="flex flex-col font-light tracking-tight mb-2 h-full overflow-y-auto overflow-x-hidden snap-y scrollbar">
                     {
                         isLoading ? (
                             <div className="flex flex-col items-center justify-center h-full">
