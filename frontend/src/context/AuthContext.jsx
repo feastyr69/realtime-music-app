@@ -27,8 +27,13 @@ export const AuthProvider = ({ children }) => {
   }, []);
 
   useEffect(() => {
+    // Prevent wiping state due to duplicate background refreshing if we're currently processing a Google callback token
+    if (window.location.search.includes('token=')) {
+      setLoading(false);
+      return; 
+    }
     checkLoginStatus();
-  }, []);
+  }, [checkLoginStatus]);
 
   const login = async (token) => {
     if (token) {

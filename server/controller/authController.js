@@ -16,6 +16,17 @@ const generateTokens = (userPayload) => {
     return { accessToken, refreshToken };
 };
 
+const getCookieConfig = () => {
+    // Render doesn't always strictly set NODE_ENV, so we safely fallback to checking if it's a deployed client
+    const isProd = process.env.NODE_ENV === 'production' || (process.env.CLIENT_URL && !process.env.CLIENT_URL.includes('localhost'));
+    return {
+        httpOnly: true,
+        secure: isProd,
+        sameSite: isProd ? 'none' : 'lax',
+        maxAge: 7 * 24 * 60 * 60 * 1000
+    };
+};
+
 const register = async (req, res) => {
     const { username, password } = req.body;
     try {
@@ -56,12 +67,7 @@ const login = async (req, res) => {
 
         const { accessToken, refreshToken } = generateTokens({ id: user.rows[0].id, username: user.rows[0].username, avatar_url: user.rows[0].avatar_url, google_name: user.rows[0].google_name });
 
-        res.cookie('refreshToken', refreshToken, {
-            httpOnly: true,
-            secure: process.env.NODE_ENV === 'production',
-            sameSite: process.env.NODE_ENV === 'production' ? 'none' : 'lax',
-            maxAge: 7 * 24 * 60 * 60 * 1000
-        });
+        res.cookie('refreshToken', refreshToken, getCookieConfig());
 
         res.json({ status: true, token: accessToken, username: user.rows[0].username });
     } catch (error) {
@@ -77,12 +83,7 @@ const googleCallback = (req, res) => {
 
     const { accessToken, refreshToken } = generateTokens({ id: req.user.id, username: req.user.username, avatar_url: req.user.avatar_url, google_name: req.user.google_name });
 
-    res.cookie('refreshToken', refreshToken, {
-        httpOnly: true,
-        secure: process.env.NODE_ENV === 'production',
-        sameSite: process.env.NODE_ENV === 'production' ? 'none' : 'lax',
-        maxAge: 7 * 24 * 60 * 60 * 1000
-    });
+    res.cookie('refreshToken', refreshToken, getCookieConfig());
 
     res.redirect(`${process.env.CLIENT_URL || 'http://localhost:5173'}/auth/callback?token=${accessToken}`);
 };
@@ -109,13 +110,13 @@ const refresh = async (req, res) => {
             user: userRes.rows[0]
         });
     } catch (err) {
-        res.clearCookie('refreshToken', { httpOnly: true, secure: process.env.NODE_ENV === 'production', sameSite: process.env.NODE_ENV === 'production' ? 'none' : 'lax' });
+        res.clearCookie('refreshToken', getCookieConfig());
         return res.status(403).json({ success: false, message: "Invalid refresh token" });
     }
 };
 
 const logout = (req, res) => {
-    res.clearCookie('refreshToken', { httpOnly: true, secure: process.env.NODE_ENV === 'production', sameSite: process.env.NODE_ENV === 'production' ? 'none' : 'lax' });
+    res.clearCookie('refreshToken', getCookieConfig());
     res.json({ success: true, message: "Logged out successfully" });
 };
 
