@@ -17,8 +17,11 @@ const generateTokens = (userPayload) => {
 };
 
 const getCookieConfig = () => {
-    // Render doesn't always strictly set NODE_ENV, so we safely fallback to checking if it's a deployed client
-    const isProd = process.env.NODE_ENV === 'production' || (process.env.CLIENT_URL && !process.env.CLIENT_URL.includes('localhost'));
+    // RENDER env var is automatically set by Render.com — use it as the most reliable prod signal.
+    // CLIENT_URL in the committed .env still points to localhost, so don't rely on it alone.
+    const isProd = !!process.env.RENDER
+        || process.env.NODE_ENV === 'production'
+        || (process.env.CLIENT_URL && !process.env.CLIENT_URL.includes('localhost'));
     return {
         httpOnly: true,
         secure: isProd,
