@@ -17,11 +17,13 @@ export default function Player({ roomId, userName, socket }) {
     const [isPlayerReady, setIsPlayerReady] = useState(false);
     const [isBuffering, setIsBuffering] = useState(false);
     const [isPlayPauseDisabled, setIsPlayPauseDisabled] = useState(false);
+    const [playbackError, setPlaybackError] = useState(null);
 
     const isPlayingRef = useRef(isPlaying);
     const currentSongRef = useRef(currentSong);
     const isPlayerReadyRef = useRef(isPlayerReady);
     const loadedVideoIdRef = useRef(null);
+    const playbackErrorTimerRef = useRef(null);
 
     useEffect(() => {
         isPlayingRef.current = isPlaying;
@@ -139,6 +141,31 @@ export default function Player({ roomId, userName, socket }) {
         // Sync React state if the browser blocks Autoplay or the user pauses manually
         if (event.data === 1) setIsPlaying(true);
         if (event.data === 2) setIsPlaying(false);
+
+        // state -1 = unstarted: video may be unplayable (region-locked, removed, etc.)
+        // Start a 5-second watchdog; if still -1 after that, treat it as an error and skip.
+        if (event.data === -1) {
+            if (!playbackErrorTimerRef.current) {
+                playbackErrorTimerRef.current = setTimeout(() => {
+                    playbackErrorTimerRef.current = null;
+                    setPlaybackError('Error occurred playing the current song — skipping...');
+                    // Give the user a moment to read the message, then skip
+                    setTimeout(() => {
+                        setPlaybackError(null);
+                        if (currentSongRef.current) {
+                            socket.emit('next-song', roomId, currentSongRef.current.videoId);
+                        }
+                    }, 2500);
+                }, 5000);
+            }
+        } else {
+            // Any active state clears the watchdog
+            if (playbackErrorTimerRef.current) {
+                clearTimeout(playbackErrorTimerRef.current);
+                playbackErrorTimerRef.current = null;
+            }
+            if (event.data !== -1) setPlaybackError(null);
+        }
     }
 
     useEffect(() => {
@@ -277,6 +304,12 @@ export default function Player({ roomId, userName, socket }) {
                     {isBuffering && <div className="absolute inset-0 flex items-center justify-center bg-black/20">
                         <div className="animate-spin rounded-full h-12 w-12 border-2 border-zinc-400 border-t-aura-400 z-100"></div>
                     </div>}
+                    {playbackError && (
+                        <div className="absolute inset-0 z-10 flex flex-col items-center justify-center bg-black/70 backdrop-blur-sm text-center px-4 gap-2">
+                            <span className="text-rose-400 text-2xl">⚠</span>
+                            <p className="text-rose-300 text-xs font-semibold tracking-wide leading-snug">{playbackError}</p>
+                        </div>
+                    )}
                     {currentSong && <img
                         src={`https://i.ytimg.com/vi/${currentSong.videoId}/maxresdefault.jpg`}
                         alt="Album Art"
