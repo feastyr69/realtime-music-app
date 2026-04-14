@@ -23,6 +23,17 @@
 }
 
 @layer base {
+  /* Scale all rem-based text down on small screens */
+  html {
+    font-size: 14px;
+  }
+
+  @media (min-width: 640px) {
+    html {
+      font-size: 16px;
+    }
+  }
+
   * {
     font-family: var(--font-sans);
   }
