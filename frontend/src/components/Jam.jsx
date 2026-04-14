@@ -28,8 +28,6 @@ const socket = io(backendUrl, {
     reconnection: true,
     reconnectionAttempts: 10,
     reconnectionDelay: 1000,
-    pingInterval: 5000,
-    pingTimeout: 10000,
 });
 
 socket.on("connect", () => {
@@ -105,6 +103,15 @@ export default function Jam() {
         return () => {
             socket.off("update-users", handleUpdateUsers);
         };
+    }, []);
+
+    useEffect(() => {
+        const pingInterval = setInterval(() => {
+            if (socket.connected) {
+                socket.emit("keep-alive", { timestamp: Date.now() });
+            }
+        }, 10000);
+        return () => clearInterval(pingInterval);
     }, []);
 
     const uniqueUsers = roomUsers.filter((user, index, arr) =>
