@@ -220,7 +220,7 @@ export default function Player({ roomId, userName, socket }) {
             progressInterval.current = setInterval(() => {
                 setProgress(playerRef.current.getCurrentTime());
                 const state = playerRef.current.getPlayerState();
-                if (state === 0) {
+                if (state === 0 || state === -1) {
                     clearInterval(progressInterval.current);
                     setIsPlaying(false);
                     socket.emit('next-song', roomId, currentSong.videoId);

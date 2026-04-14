@@ -106,12 +106,20 @@ export default function Jam() {
     }, []);
 
     useEffect(() => {
-        const pingInterval = setInterval(() => {
+        const worker = new Worker('/keepAliveWorker.js');
+
+        worker.onmessage = () => {
             if (socket.connected) {
-                socket.emit("keep-alive", { timestamp: Date.now() });
+                socket.emit('keep-alive', { timestamp: Date.now() });
             }
-        }, 10000);
-        return () => clearInterval(pingInterval);
+        };
+
+        worker.postMessage('start');
+
+        return () => {
+            worker.postMessage('stop');
+            worker.terminate();
+        };
     }, []);
 
     const uniqueUsers = roomUsers.filter((user, index, arr) =>
