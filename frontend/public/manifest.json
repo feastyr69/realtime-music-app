@@ -1,0 +1,15 @@
+{
+    "short_name": "aura.",
+    "name": "Aura - Listen Together",
+    "start_url": "/",
+    "display": "standalone",
+    "background_color": "#000000",
+    "theme_color": "#000000",
+    "icons": [
+        {
+            "src": "/icon.jpg",
+            "sizes": "any",
+            "type": "image/jpeg"
+        }
+    ]
+}
