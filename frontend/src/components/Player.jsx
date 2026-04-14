@@ -142,14 +142,13 @@ export default function Player({ roomId, userName, socket }) {
         if (event.data === 1) setIsPlaying(true);
         if (event.data === 2) setIsPlaying(false);
 
-        // state -1 = unstarted: video may be unplayable (region-locked, removed, etc.)
-        // Start a 5-second watchdog; if still -1 after that, treat it as an error and skip.
+        // state -1 = unstarted
         if (event.data === -1) {
             if (!playbackErrorTimerRef.current) {
                 playbackErrorTimerRef.current = setTimeout(() => {
                     playbackErrorTimerRef.current = null;
                     setPlaybackError('Error occurred playing the current song — skipping...');
-                    // Give the user a moment to read the message, then skip
+                    // give the user a moment to read the message, then skip
                     setTimeout(() => {
                         setPlaybackError(null);
                         if (currentSongRef.current) {
@@ -159,7 +158,6 @@ export default function Player({ roomId, userName, socket }) {
                 }, 5000);
             }
         } else {
-            // Any active state clears the watchdog
             if (playbackErrorTimerRef.current) {
                 clearTimeout(playbackErrorTimerRef.current);
                 playbackErrorTimerRef.current = null;
@@ -247,7 +245,7 @@ export default function Player({ roomId, userName, socket }) {
             progressInterval.current = setInterval(() => {
                 setProgress(playerRef.current.getCurrentTime());
                 const state = playerRef.current.getPlayerState();
-                if (state === 0 || state === -1) {
+                if (state === 0) {
                     clearInterval(progressInterval.current);
                     setIsPlaying(false);
                     socket.emit('next-song', roomId, currentSong.videoId);
