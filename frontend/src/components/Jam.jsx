@@ -125,7 +125,7 @@ export default function Jam() {
 
     useEffect(() => {
         const handleDisconnect = () => setIsDisconnected(true);
-        const handleReconnect = () => setIsDisconnected(true);
+        const handleReconnect = () => setIsDisconnected(false);
 
         socket.on('disconnect', handleDisconnect);
         socket.on('connect', handleReconnect);
