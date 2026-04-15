@@ -54,7 +54,6 @@ export default function Jam() {
     const [roomUsers, setRoomUsers] = useState([]);
     const [inviteCopied, setInviteCopied] = useState(false);
     const [activeTab, setActiveTab] = useState(1); // 0=Chat, 1=Player, 2=Queue
-    const [isDisconnected, setIsDisconnected] = useState(false);
     const { user } = useContext(AuthContext);
     const scrollContainerRef = useRef(null);
     const chatRef = useRef(null);
@@ -123,19 +122,6 @@ export default function Jam() {
         };
     }, []);
 
-    useEffect(() => {
-        const handleDisconnect = () => setIsDisconnected(true);
-        const handleReconnect = () => setIsDisconnected(false);
-
-        socket.on('disconnect', handleDisconnect);
-        socket.on('connect', handleReconnect);
-
-        return () => {
-            socket.off('disconnect', handleDisconnect);
-            socket.off('connect', handleReconnect);
-        };
-    }, []);
-
     const uniqueUsers = roomUsers.filter((user, index, arr) =>
         index === arr.findIndex((eachUser) => eachUser.userId === user.userId)
     );
@@ -159,70 +145,6 @@ export default function Jam() {
 
     return (
         <>
-            {/* Connection Lost Overlay */}
-            <AnimatePresence>
-                {isDisconnected && (
-                    <motion.div
-                        key="connection-lost"
-                        className="fixed inset-0 z-[9999] flex items-center justify-center"
-                        initial={{ opacity: 0 }}
-                        animate={{ opacity: 1 }}
-                        exit={{ opacity: 0 }}
-                        transition={{ duration: 0.3 }}
-                        style={{ backdropFilter: 'blur(12px)', WebkitBackdropFilter: 'blur(12px)', backgroundColor: 'rgba(16, 11, 11, 0.55)' }}
-                    >
-                        <motion.div
-                            className="relative flex flex-col items-center gap-5 p-8 rounded-2xl border border-white/12 shadow-[0_24px_72px_rgba(0,0,0,0.55)] max-w-sm w-[90%] text-center"
-                            style={{ background: 'rgba(28, 20, 20, 0.82)', backdropFilter: 'blur(24px)', WebkitBackdropFilter: 'blur(24px)' }}
-                            initial={{ opacity: 0, scale: 0.9, y: 24 }}
-                            animate={{ opacity: 1, scale: 1, y: 0 }}
-                            exit={{ opacity: 0, scale: 0.92, y: 16 }}
-                            transition={{ duration: 0.35, ease: 'easeOut' }}
-                        >
-                            {/* Pulsing icon */}
-                            <motion.div
-                                className="flex items-center justify-center w-16 h-16 rounded-full border border-red-500/40 bg-red-500/10"
-                                animate={{ scale: [1, 1.08, 1], opacity: [1, 0.7, 1] }}
-                                transition={{ duration: 2, repeat: Infinity, ease: 'easeInOut' }}
-                            >
-                                <svg width="30" height="30" viewBox="0 0 24 24" fill="none" stroke="#ef4444" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                                    <line x1="1" y1="1" x2="23" y2="23" />
-                                    <path d="M16.72 11.06A11 11 0 0 1 19 12.55M5 12.55a11 11 0 0 1 5.17-2.39M10.71 5.05A11 11 0 0 1 22.56 9M1.42 9a11 11 0 0 1 4.7-2.88M8.53 16.11a6 6 0 0 1 6.95 0M12 20h.01" />
-                                </svg>
-                            </motion.div>
-
-                            <div className="flex flex-col gap-1">
-                                <h2 className="text-xl font-display font-bold text-white/90 tracking-tight">Connection Lost</h2>
-                                <p className="text-sm text-white/50 leading-relaxed">You've been disconnected from the session.<br />Reconnecting automatically&hellip;</p>
-                            </div>
-
-                            {/* Reconnecting progress dots */}
-                            <div className="flex items-center gap-1.5">
-                                {[0, 1, 2].map(i => (
-                                    <motion.span
-                                        key={i}
-                                        className="w-1.5 h-1.5 rounded-full bg-aura-400/70"
-                                        animate={{ opacity: [0.3, 1, 0.3] }}
-                                        transition={{ duration: 1.2, repeat: Infinity, delay: i * 0.2 }}
-                                    />
-                                ))}
-                            </div>
-
-                            <button
-                                type="button"
-                                onClick={() => window.location.reload()}
-                                className="mt-1 inline-flex items-center gap-2 px-5 py-2.5 rounded-full bg-white/8 hover:bg-white/14 border border-white/20 hover:border-white/35 text-sm font-semibold text-white/85 hover:text-white transition-all duration-200 hover:cursor-pointer"
-                            >
-                                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
-                                    <polyline points="23 4 23 10 17 10" />
-                                    <path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10" />
-                                </svg>
-                                Refresh Page
-                            </button>
-                        </motion.div>
-                    </motion.div>
-                )}
-            </AnimatePresence>
             <Navbar />
             <div className="relative w-full flex justify-center overflow-hidden">
                 <AnimatePresence mode="wait">
