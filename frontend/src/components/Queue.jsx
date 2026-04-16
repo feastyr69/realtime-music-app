@@ -135,6 +135,7 @@ export default function Queue({ roomId, sessionId, userName, socket }) {
                     <div className='flex flex-row w-full items-center relative'>
                         <input
                             type="text"
+                            enterKeyHint='search'
                             placeholder='Search for a song'
                             className='w-full p-2 sm:p-2.5 my-1 text-xs sm:text-sm rounded-xl border border-white/10 pr-10 bg-white/3 outline-none focus:border-aura-400/40 text-zinc-200 placeholder:text-zinc-500'
                             onChange={handleSearchInput}

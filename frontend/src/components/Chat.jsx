@@ -131,7 +131,7 @@ export default function Chat({ roomId, sessionId, userName, avatarUrl, className
                     <div ref={messageEndRef} />
                 </div>
                 <div className="flex flex-row">
-                    <input type="text" placeholder="Type a message…" className="w-full p-2 sm:p-2.5 my-1 text-xs sm:text-sm rounded-xl border border-white/10 bg-white/3 text-zinc-200 placeholder:text-zinc-500 focus:outline-none focus:border-aura-400/40" value={messageObj.message} onChange={(e) => setMessageObj({ ...messageObj, message: e.target.value })} onKeyDown={handleKeyDown} />
+                    <input type="text" enterKeyHint='send' placeholder="Type a message…" className="w-full p-2 sm:p-2.5 my-1 text-xs sm:text-sm rounded-xl border border-white/10 bg-white/3 text-zinc-200 placeholder:text-zinc-500 focus:outline-none focus:border-aura-400/40" value={messageObj.message} onChange={(e) => setMessageObj({ ...messageObj, message: e.target.value })} onKeyDown={handleKeyDown} />
                     <button type="button" className="p-2 sm:p-3 m-1 ml-2 rounded-full border border-white/12 text-aura-400 hover:bg-aura-400/10 transition-colors" onClick={handleSend} aria-label="Send message"><IoSend className='size-5 sm:size-6' /></button>
                 </div>
             </div>
