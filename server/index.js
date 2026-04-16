@@ -29,12 +29,10 @@ const io = new Server(httpServer, {
     credentials: true
   },
   adapter: socketAdapter,
-  // Skip HTTP long-polling and connect straight to WebSocket.
-  // This avoids the polling→WebSocket upgrade step that Render's proxy
+  // Skip HTTP long-polling — connect straight to WebSocket.
+  // Avoids the polling→WebSocket upgrade step that Render's proxy
   // kills mid-flight, causing the "disconnects a few seconds after joining" bug.
   transports: ['websocket'],
-  pingInterval: 10000,  // send ping every 10s
-  pingTimeout: 5000,    // disconnect if no pong within 5s
 });
 
 const { initDb } = require("./database/db");
