@@ -25,6 +25,7 @@ const userInfo = {
 }
 
 const socket = io(backendUrl, {
+    transports: ['websocket'], // skip polling, connect straight to WS — avoids Render proxy timeout during upgrade
     reconnection: true,
     reconnectionAttempts: Infinity,
     reconnectionDelay: 1000,
