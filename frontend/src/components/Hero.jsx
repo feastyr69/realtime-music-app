@@ -7,6 +7,8 @@ import { AuthContext } from "../context/AuthContext";
 export default function Hero() {
     const [titleNumber, setTitleNumber] = useState(0);
     const titles = useMemo(() => ["Listen", "Sync", "Share"], []);
+    const headings = ["Not your average\n Spotify Clone.", "One room,\n Every beat in sync.", "Music is better\n together."];
+    const [randomIndex] = useState(() => Math.floor(Math.random() * headings.length));
     const { user } = useContext(AuthContext);
 
     useEffect(() => {
@@ -77,8 +79,8 @@ export default function Hero() {
                         <p className="font-display text-xs md:text-sm uppercase tracking-[0.35em] text-aura-400/95 mb-4">
                             Aura
                         </p>
-                        <h1 className="font-display font-bold text-4xl sm:text-5xl md:text-6xl lg:text-7xl tracking-tight text-transparent bg-clip-text bg-linear-to-br from-zinc-50 via-zinc-100 to-zinc-400 pb-2 drop-shadow-[0_2px_24px_rgba(0,0,0,0.45)]">
-                            One room. Every beat in sync.
+                        <h1 className="font-display font-bold text-4xl sm:text-5xl md:text-6xl lg:text-7xl whitespace-pre tracking-tight text-transparent bg-clip-text bg-linear-to-br from-zinc-50 via-zinc-100 to-zinc-400 pb-2 drop-shadow-[0_2px_24px_rgba(0,0,0,0.45)]">
+                            {headings[randomIndex]}
                         </h1>
                         <div className="relative flex w-full min-h-14 sm:min-h-16 items-center justify-center overflow-hidden mt-4 md:mt-6">
                             {titles.map((title, index) => (
