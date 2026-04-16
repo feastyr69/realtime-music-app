@@ -26,12 +26,9 @@ const userInfo = {
 
 const socket = io(backendUrl, {
     reconnection: true,
-    reconnectionAttempts: 10,
+    reconnectionAttempts: Infinity,
     reconnectionDelay: 1000,
-});
-
-socket.on("connect", () => {
-    console.log("Connected to server");
+    reconnectionDelayMax: 8000,
 });
 
 
@@ -54,11 +51,63 @@ export default function Jam() {
     const [roomUsers, setRoomUsers] = useState([]);
     const [inviteCopied, setInviteCopied] = useState(false);
     const [activeTab, setActiveTab] = useState(1); // 0=Chat, 1=Player, 2=Queue
+    const [connectionStatus, setConnectionStatus] = useState('connected'); // 'connected' | 'disconnected' | 'reconnecting'
     const { user } = useContext(AuthContext);
     const scrollContainerRef = useRef(null);
     const chatRef = useRef(null);
     const playerRef = useRef(null);
     const queueRef = useRef(null);
+    // Keep refs to latest roomId & userName so reconnect handler always has fresh values
+    const roomIdRef = useRef(roomId);
+    const userNameRef = useRef(userName);
+    const avatarUrlRef = useRef(null);
+    const sessionIdRef = useRef(sessionId);
+    const hasJoinedRef = useRef(false); // track if we've ever joined (skip first connect)
+
+    // Keep refs in sync
+    useEffect(() => { roomIdRef.current = roomId; }, [roomId]);
+    useEffect(() => { userNameRef.current = username; }, [username]);
+    useEffect(() => { avatarUrlRef.current = user?.avatar_url ?? null; }, [user]);
+
+    // Auto-reconnect: re-join room whenever the socket reconnects
+    useEffect(() => {
+        const handleConnect = () => {
+            console.log("Socket connected");
+            setConnectionStatus('connected');
+            // Re-join room on every reconnect (but not the very first connection —
+            // Chat.jsx handles the initial join-room on mount)
+            if (hasJoinedRef.current) {
+                console.log("Reconnected — re-joining room", roomIdRef.current);
+                socket.emit('join-room', {
+                    roomId: roomIdRef.current,
+                    sessionId: sessionIdRef.current,
+                    userName: userNameRef.current,
+                    avatarUrl: avatarUrlRef.current,
+                    joinedAt: Date.now(),
+                });
+            }
+        };
+
+        const handleDisconnect = (reason) => {
+            console.warn("Socket disconnected:", reason);
+            setConnectionStatus('disconnected');
+        };
+
+        const handleReconnectAttempt = (attempt) => {
+            console.log(`Reconnect attempt #${attempt}`);
+            setConnectionStatus('reconnecting');
+        };
+
+        socket.on('connect', handleConnect);
+        socket.on('disconnect', handleDisconnect);
+        socket.io.on('reconnect_attempt', handleReconnectAttempt);
+
+        return () => {
+            socket.off('connect', handleConnect);
+            socket.off('disconnect', handleDisconnect);
+            socket.io.off('reconnect_attempt', handleReconnectAttempt);
+        };
+    }, []);
 
     useEffect(() => {
         console.log("Checking room...");
@@ -140,12 +189,28 @@ export default function Jam() {
     const handleJoinRoom = () => {
         localStorage.setItem("userName", username);
         userName = username;
+        userNameRef.current = username;
+        hasJoinedRef.current = true;
         setShowPlayer(true);
     }
+
+    const reconnectBanner = connectionStatus !== 'connected' && (
+        <div
+            className={`fixed bottom-6 left-1/2 -translate-x-1/2 z-50 flex items-center gap-2.5 px-4 py-2.5 rounded-full border backdrop-blur-xl shadow-[0_8px_32px_rgba(0,0,0,0.4)] text-xs font-semibold uppercase tracking-widest transition-all duration-500 ${connectionStatus === 'reconnecting'
+                ? 'border-amber-500/40 bg-amber-500/10 text-amber-400'
+                : 'border-red-500/40 bg-red-500/10 text-red-400'
+                }`}
+        >
+            <span className={`w-2 h-2 rounded-full ${connectionStatus === 'reconnecting' ? 'bg-amber-400 animate-pulse' : 'bg-red-400'
+                }`} />
+            {connectionStatus === 'reconnecting' ? 'Reconnecting…' : 'Disconnected'}
+        </div>
+    );
 
     return (
         <>
             <Navbar />
+            {reconnectBanner}
             <div className="relative w-full flex justify-center overflow-hidden">
                 <AnimatePresence mode="wait">
                     {loading ? (
