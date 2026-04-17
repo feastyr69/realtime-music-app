@@ -10,6 +10,11 @@ const footerLinks = [
   { label: "Register", to: "/register" },
 ];
 
+const legalLinks = [
+  { label: "Privacy Policy", to: "/privacy-policy" },
+  { label: "Terms & Conditions", to: "/terms" },
+];
+
 const socialLinks = [
   { icon: IoLogoGithub, href: "https://github.com/feastyr69", label: "GitHub" },
   { icon: IoLogoLinkedin, href: "https://linkedin.com/in/yashraj2006", label: "LinkedIn" },
@@ -55,11 +60,21 @@ export default function Footer() {
           <div className="h-px w-full bg-white/8" />
 
           <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
-
             <p className="text-xs md:text-sm text-zinc-500">
               Crafted by <a href="https://github.com/feastyr69" target="_blank" rel="noreferrer" className="text-aura-400 hover:text-aura-300 transition-colors">Feastyr</a>
             </p>
-            <p className="text-xs md:text-sm text-zinc-500">© 2026 aura. All rights reserved.</p>
+            <div className="flex flex-wrap items-center gap-x-6 gap-y-1">
+              {legalLinks.map(({ label, to }) => (
+                <Link
+                  key={to}
+                  to={to}
+                  className="text-xs md:text-sm text-zinc-500 hover:text-aura-400 transition-colors"
+                >
+                  {label}
+                </Link>
+              ))}
+              <p className="text-xs md:text-sm text-zinc-500">© 2026 aura. All rights reserved.</p>
+            </div>
           </div>
         </div>
       </motion.div>
