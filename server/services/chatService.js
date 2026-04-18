@@ -53,14 +53,13 @@ const getRoomHistory = async (roomId) =>{
     }
 }
 
-const saveMessage = async (roomId, message,sender) =>{
+const saveMessage = async (roomId, msgObj) => {
     const roomKey = `room:${roomId}:messages`;
     const timestamp = Date.now();
-    try{
-        await redisClient.rPush(roomKey, JSON.stringify({message, sender, timestamp}));
+    try {
+        await redisClient.rPush(roomKey, JSON.stringify({ ...msgObj, timestamp }));
         await redisClient.expire(roomKey, 60 * 60);
-
-    }catch(err){
+    } catch (err) {
         console.log(err);
     }
 }

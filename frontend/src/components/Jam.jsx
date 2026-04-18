@@ -292,7 +292,7 @@ export default function Jam() {
                     ) : (
                         <div className='flex flex-col w-full items-center'>
                             {/* Mobile-only tab navigator */}
-                            <div className="xl:hidden flex items-center gap-3 mt-6 mb-2 px-4 py-1 rounded-full border border-white/10 bg-white/4 backdrop-blur-xl shadow-[0_8px_32px_rgba(0,0,0,0.3)]">
+                            <div className="md:hidden flex items-center gap-3 mt-6 mb-2 px-4 py-1 rounded-full border border-white/10 bg-white/4 backdrop-blur-xl shadow-[0_8px_32px_rgba(0,0,0,0.3)]">
                                 {["Chat", "Player", "Queue"].map((label, idx) => (
                                     <button
                                         key={label}

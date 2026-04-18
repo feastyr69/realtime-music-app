@@ -322,7 +322,7 @@ export default function Player({ roomId, userName, socket }) {
                 <div className="flex flex-col items-center mb-4 text-center w-full px-2">
                     {currentSong ? (
                         <>
-                            <h2 className="font-display text-base sm:text-xl md:text-2xl font-semibold text-zinc-100 tracking-tight truncate w-full">{currentSong.name}</h2>
+                            <h2 className="font-display text-[18px] sm:text-xl md:text-2xl font-semibold text-zinc-100 tracking-tight truncate w-full">{currentSong.name}</h2>
                             <p className="text-aura-400/90 font-medium text-xs sm:text-sm mt-1 truncate w-full">{currentSong.artist.name}</p>
                         </>
                     ) : (

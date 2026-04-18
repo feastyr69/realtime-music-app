@@ -27,7 +27,7 @@ const connectIO = (io) => {
             console.log(`User ${socket.id} joined room ${roomId}`);
             if (!skipLocks.get(userName + roomId)) {
                 socket.to(roomId).emit("receive-message", { message: `${userName} has joined the room`, sender: "System" });
-                await saveMessage(roomId, `${userName} has joined the room`, "System");
+                await saveMessage(roomId, { message: `${userName} has joined the room`, sender: "System" });
             }
             skipLocks.set(userName + roomId, true);
             setTimeout(() => skipLocks.delete(userName + roomId), 15000);
@@ -43,7 +43,7 @@ const connectIO = (io) => {
         //user send message
         socket.on("send-message", async (data) => {
             const { roomId, messageObj } = data;
-            await saveMessage(roomId, messageObj.message, messageObj.sender);
+            await saveMessage(roomId, messageObj);
             socket.to(roomId).emit("receive-message", messageObj);
         });
 
@@ -119,10 +119,9 @@ const connectIO = (io) => {
                 const users = await getUsersInRoom(socket.roomId);
                 io.to(socket.roomId).emit("update-users", users);
 
-                socket.to(socket.roomId).emit("receive-message", {
-                    message: `${socket.userName} has left the room`,
-                    sender: "System"
-                });
+                const leaveMsg = { message: `${socket.userName} has left the room`, sender: "System" };
+                socket.to(socket.roomId).emit("receive-message", leaveMsg);
+                await saveMessage(socket.roomId, leaveMsg);
             }
         });
 
@@ -157,30 +156,17 @@ const connectIO = (io) => {
         //user logs action
 
         socket.on('log-action', async (roomId, sender, action, timestamp) => {
-            if (action === "skipped") {
-                await saveMessage(roomId, sender + " skipped the song", "System");
-                io.to(roomId).emit('receive-message', {
-                    message: sender + " skipped the song",
-                    sender: "System",
-                    timestamp: timestamp
-                })
-            }
-            if (action === "cued") {
-                await saveMessage(roomId, sender + " cued a song", "System");
-                io.to(roomId).emit('receive-message', {
-                    message: sender + " cued a song",
-                    sender: "System",
-                    timestamp: timestamp
-                })
-            }
-            if (action === "removed") {
-                await saveMessage(roomId, sender + " removed a song", "System");
-                io.to(roomId).emit('receive-message', {
-                    message: sender + " removed a song",
-                    sender: "System",
-                    timestamp: timestamp
-                })
-            }
+            const actionMessages = {
+                skipped: `${sender} skipped the song`,
+                cued:    `${sender} cued a song`,
+                removed: `${sender} removed a song`,
+            };
+            const text = actionMessages[action];
+            if (!text) return;
+
+            const msgObj = { message: text, sender: "System", timestamp };
+            await saveMessage(roomId, msgObj);
+            io.to(roomId).emit('receive-message', msgObj);
         })
 
     });
