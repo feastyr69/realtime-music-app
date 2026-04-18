@@ -115,7 +115,7 @@ export default function Queue({ roomId, sessionId, userName, socket }) {
                     transition: 'transform 0.5s ease-out',
                     transformStyle: 'preserve-3d'
                 }}
-                className='flex flex-col w-72 sm:w-80 h-120 p-3 sm:p-5 rounded-xl shadow-[0_12px_48px_rgba(0,0,0,0.35)] bg-white/4 backdrop-blur-xl border border-white/10'>
+                className='flex flex-col w-78 sm:w-80 h-120 p-3 sm:p-5 rounded-xl shadow-[0_12px_48px_rgba(0,0,0,0.35)] bg-white/4 backdrop-blur-xl border border-white/10'>
                 <p className="text-[9px] sm:text-[10px] uppercase tracking-[0.2em] text-zinc-500 mb-2 font-medium">Add to queue</p>
                 <div className='relative w-full h-full'>
                     <AnimatePresence>
