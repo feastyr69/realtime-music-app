@@ -17,7 +17,7 @@ Aura. is a real-time collaborative music jam session platform. It allows users t
 - **Styling**: Tailwind CSS v4
 - **Animations**: Framer Motion
 - **Real-time Engine**: Socket.io-client
-- **Media**: React YouTube, Giphy React Components
+- **Media**: React YouTube, YT Music API , Giphy React Components
 
 ### Backend
 - **Server**: Node.js, Express
