@@ -16,7 +16,7 @@ Aura. is a real-time collaborative music jam session platform. It allows users t
 - **Framework**: React 19 (via Vite)
 - **Styling**: Tailwind CSS v4
 - **Animations**: Framer Motion
-- **Real-time Engine**: Socket.io-client
+- **Real-time Engine**: WebSockets (Socket.io)
 - **Media**: React YouTube, YT Music API , Giphy React Components
 
 ### Backend
